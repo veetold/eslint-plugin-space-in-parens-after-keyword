@@ -1,0 +1,21 @@
+{
+  "name": "eslint-plugin-space-in-parens-after-keyword",
+  "version": "0.1.0",
+  "author": "Viktor Klimov",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node enforce.test.js"
+  },
+  "keywords": [
+    "eslint",
+    "eslint-plugin"
+  ],
+  "license": "ISC",
+  "peerDependencies": {
+    "eslint": ">=5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.49.0"
+  }
+}
