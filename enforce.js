@@ -14,7 +14,7 @@ function checkLeftParen(context, node, paramNode) {
 
         context.report({
             node,
-            message: `No space before left parentheses`,
+            message: `No space after left parentheses`,
             loc: {
                 start,
                 end
@@ -26,13 +26,23 @@ function checkLeftParen(context, node, paramNode) {
     }
 }
 
-function checkRightParen(context, node, paramNode) {
+function checkRightParen(context, node, paramNode, bodyNodes) {
     var sourceCode = context.sourceCode;
+
     var nodeSource = sourceCode.getText(node);
+    var paramSource = sourceCode.getText(paramNode);
 
-    const rParenPos = nodeSource.indexOf(")");
+    var searchAt = nodeSource.substring(nodeSource.indexOf(paramSource)).replace(paramSource, '');
 
-    if (nodeSource.charAt(rParenPos - 1) != " " && nodeSource.charAt(rParenPos - 1) != "\n")
+    for (var node of bodyNodes.filter(n => !!n))
+    {
+        var nodeSource = sourceCode.getText(node);
+        searchAt = searchAt.replace(nodeSource, '')
+    }
+
+    var rParenPos = searchAt.indexOf(")");
+
+    if (searchAt.charAt(rParenPos - 1) != " " && searchAt.charAt(rParenPos - 1) != "\n")
     {
         var start = paramNode.loc.end;
         var end = {
@@ -66,28 +76,28 @@ module.exports = {
     create(context) {
         return {
             IfStatement(node) {
-                checkLeftParen(context, node, node.test);
-                checkRightParen(context, node, node.test);
+                checkLeftParen(context, node, node.test, [node.consequent, node.alternate]);
+                checkRightParen(context, node, node.test, [node.consequent, node.alternate]);
             },
             WhileStatement(node) {
-                checkLeftParen(context, node, node.test);
-                checkRightParen(context, node, node.test);
+                checkLeftParen(context, node, node.test, [node.body]);
+                checkRightParen(context, node, node.test, [node.body]);
             },
             ForStatement(node) {
-                checkLeftParen(context, node, node.init);
-                checkRightParen(context, node, node.update);
+                checkLeftParen(context, node, node.init, [node.body]);
+                checkRightParen(context, node, node.update, [node.body]);
             },
             ForOfStatement(node) {
-                checkLeftParen(context, node, node.left);
-                checkRightParen(context, node, node.right);
+                checkLeftParen(context, node, node.left, [node.body]);
+                checkRightParen(context, node, node.right, [node.body]);
             },
             CatchClause(node) {
-                checkLeftParen(context, node, node.param);
-                checkRightParen(context, node, node.param);
+                checkLeftParen(context, node, node.param, [node.body]);
+                checkRightParen(context, node, node.param, [node.body]);
             },
             SwitchStatement(node) {
-                checkLeftParen(context, node, node.discriminant);
-                checkRightParen(context, node, node.discriminant);
+                checkLeftParen(context, node, node.discriminant, [...node.cases]);
+                checkRightParen(context, node, node.discriminant, [...node.cases]);
             }
         };
     }

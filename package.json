@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-space-in-parens-after-keyword",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Viktor Klimov",
   "description": "",
   "main": "index.js",
